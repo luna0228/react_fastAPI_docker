@@ -1,0 +1,42 @@
+version: "3.12" #version: 設定yaml版本，至少要 ”3“ 以上
+
+services:
+  #services: 在services內宣告所有要建立的docker的名稱與內容
+  python:
+    #第一個docker名稱 = python
+    container_name: react_fastapi_docker
+    build: ./server/. #build 設定docker檔案所在位置
+    image: luna0228/react_fastapi_docker:1.0 #image 設定image的名稱
+    command: python3 server/app.py #command container內執行的指令(=CMD)
+    ports:
+      - "5001:5001" #主機/docker
+    volumes:
+      - .:/code
+    depends_on:
+      - db
+    networks:
+      - local-net
+
+  db:
+    image: postgres:alpine
+    container_name: postgres
+    hostname: db
+    restart: always
+    tty: true
+    environment:
+      POSTGRES_DB: ntue
+      POSTGRES_USER: ntue
+      POSTGRES_PASSWORD: ntuedtd
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - local-net
+
+volumes:
+  postgres_data:
+
+
+networks:
+  local-net:
